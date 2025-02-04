@@ -1,11 +1,13 @@
 package com.ekaufmann.file_converter_api.controller;
 
+import com.ekaufmann.file_converter_api.dto.UserDTO;
 import com.ekaufmann.file_converter_api.service.FileConverterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +37,10 @@ public class FileConverterController {
             @ApiResponse(responseCode = "400", description = "Invalid file supplied")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Collection<String>> convertFile(
+    public ResponseEntity<Collection<UserDTO>> convertFile(
             @Parameter(name = "file", required = true)
             @RequestPart("file") MultipartFile file
-    ) {
+    ) throws BadRequestException {
 
         return ResponseEntity.ok(service.convertFile(file));
     }
