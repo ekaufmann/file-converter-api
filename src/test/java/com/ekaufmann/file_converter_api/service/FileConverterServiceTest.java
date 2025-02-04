@@ -14,8 +14,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.ekaufmann.file_converter_api.factory.DTOFactory.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.ekaufmann.file_converter_api.factory.DTOFactory.createOrderDTO;
+import static com.ekaufmann.file_converter_api.factory.DTOFactory.createProductDTO;
+import static com.ekaufmann.file_converter_api.factory.DTOFactory.createUserDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class FileConverterServiceTest {
