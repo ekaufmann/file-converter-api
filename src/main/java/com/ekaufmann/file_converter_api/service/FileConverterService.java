@@ -21,7 +21,7 @@ public class FileConverterService {
     private final int REGISTRY_MAX_SIZE = 95;
 
     public Collection<UserDTO> convertFile(
-            MultipartFile file, LocalDate startDate, LocalDate endDate) throws BadRequestException {
+            MultipartFile file, LocalDate startDate, LocalDate endDate, Integer searchedOrder) throws BadRequestException {
 
         var fileContent = FileUtil.read(file);
 
@@ -39,6 +39,11 @@ public class FileConverterService {
 
             var orderData = line.substring(55, 65) + line.substring(87, 95);
             var orderId = Integer.parseInt(orderData.substring(0, 10));
+
+            if (searchedOrder != null && searchedOrder != orderId) {
+                continue;
+            }
+
             var orderDate = orderData.substring(10, 18)
                     .replaceAll("(\\d{4})(\\d{2})(\\d{2})", "$1-$2-$3");
 

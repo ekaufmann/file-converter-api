@@ -37,10 +37,11 @@ public class FileConverterController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Collection<UserDTO>> convertFile(
             @Parameter(name = "file", required = true) @RequestPart("file") MultipartFile file,
-            @Parameter @RequestParam(required = false) LocalDate startDate,
-            @Parameter @RequestParam(required = false) LocalDate endDate
+            @Parameter(description = "yyyy-MM-dd") @RequestParam(required = false) LocalDate startDate,
+            @Parameter(description = "yyyy-MM-dd") @RequestParam(required = false) LocalDate endDate,
+            @Parameter @RequestParam(value = "orderId", required = false) Integer searchedOrder
     ) throws BadRequestException {
 
-        return ResponseEntity.ok(service.convertFile(file, startDate, endDate));
+        return ResponseEntity.ok(service.convertFile(file, startDate, endDate, searchedOrder));
     }
 }
