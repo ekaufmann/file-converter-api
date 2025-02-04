@@ -5,6 +5,8 @@ import com.ekaufmann.file_converter_api.dto.ProductDTO;
 import com.ekaufmann.file_converter_api.dto.UserDTO;
 import com.ekaufmann.file_converter_api.util.FileUtil;
 import org.apache.coyote.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,18 +20,25 @@ import java.util.TreeSet;
 @Service
 public class FileConverterService {
 
+    private final Logger logger = LoggerFactory.getLogger(FileConverterService.class);
+
     private final int REGISTRY_MAX_SIZE = 95;
 
     public Collection<UserDTO> convertFile(
             MultipartFile file, LocalDate startDate, LocalDate endDate, Integer searchedOrder) throws BadRequestException {
 
+        logger.info("Start reading contents of received file:");
         var fileContent = FileUtil.read(file);
+
+        logger.info("The file has {} lines to convert", fileContent.size());
 
         if (fileContent.stream().anyMatch(registry -> registry.length() != REGISTRY_MAX_SIZE)) {
             throw new BadRequestException("All the file's content should follow the standard format!");
         }
 
         var users = new HashSet<UserDTO>();
+
+        logger.info("Starting file content conversion:");
 
         for (String line : fileContent) {
 
@@ -83,6 +92,8 @@ public class FileConverterService {
                             () -> users.add(new UserDTO(userId, userName, orders))
                     );
         }
+
+        logger.info("The file was converted successfully!");
 
         return users;
     }
