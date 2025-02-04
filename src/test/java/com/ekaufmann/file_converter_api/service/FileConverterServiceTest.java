@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -67,7 +68,7 @@ public class FileConverterServiceTest {
     @Test
     public void shouldConvertFileAndReturnWithSuccess() throws BadRequestException {
 
-        var result = service.convertFile(file);
+        var result = service.convertFile(file, null, null);
 
         assertEquals(2, result.size());
 
@@ -79,6 +80,21 @@ public class FileConverterServiceTest {
     }
 
     @Test
+    public void shouldConvertFileAndReturnWithSuccessWithDateRange() throws BadRequestException {
+
+        var result = service.convertFile(
+                file,
+                LocalDate.of(2021, 3, 1), LocalDate.of(2021, 7, 1)
+        );
+
+        assertEquals(1, result.size());
+
+        var firstUser = convertedData.getFirst();
+
+        assertTrue(result.stream().anyMatch(user -> user.equals(firstUser)));
+    }
+
+    @Test
     public void shouldThrowBadRequestExceptionWhenFileNotFollowTheStandard() {
 
         content += "0000000075             Maria Teste00000001460000000001      673.492021112";
@@ -86,7 +102,7 @@ public class FileConverterServiceTest {
         file = new MockMultipartFile("file", content.getBytes());
 
         assertThrows(BadRequestException.class, () -> {
-            service.convertFile(file);
+            service.convertFile(file, null, null);
         });
     }
 }

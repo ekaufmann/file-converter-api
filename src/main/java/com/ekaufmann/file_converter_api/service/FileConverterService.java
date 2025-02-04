@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -19,7 +20,8 @@ public class FileConverterService {
 
     private final int REGISTRY_MAX_SIZE = 95;
 
-    public Collection<UserDTO> convertFile(MultipartFile file) throws BadRequestException {
+    public Collection<UserDTO> convertFile(
+            MultipartFile file, LocalDate startDate, LocalDate endDate) throws BadRequestException {
 
         var fileContent = FileUtil.read(file);
 
@@ -39,6 +41,10 @@ public class FileConverterService {
             var orderId = Integer.parseInt(orderData.substring(0, 10));
             var orderDate = orderData.substring(10, 18)
                     .replaceAll("(\\d{4})(\\d{2})(\\d{2})", "$1-$2-$3");
+
+            if (startDate != null && endDate != null && verifyDateNotInRange(orderDate, startDate, endDate)) {
+                continue;
+            }
 
             var productData = line.substring(65, 87);
             var productId = Integer.parseInt(productData.substring(0, 10));
@@ -74,6 +80,13 @@ public class FileConverterService {
         }
 
         return users;
+    }
+
+    private boolean verifyDateNotInRange(String orderDate, LocalDate startDate, LocalDate endDate) {
+
+        var date = LocalDate.parse(orderDate);
+
+        return date.isBefore(startDate) || date.isAfter(endDate);
     }
 
     private void updateOldOrder(OrderDTO oldOrder, UserDTO user, ProductDTO newProduct) {
